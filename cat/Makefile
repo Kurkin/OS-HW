@@ -8,5 +8,5 @@ clear:
 	rm -f !($(C)|Makefile)
 
 %: %.c
-	clang $< -o $@ 
+	cc $< -o $@ 
 
