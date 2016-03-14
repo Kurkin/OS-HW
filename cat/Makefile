@@ -4,8 +4,8 @@ SHELL=bash -O extglob
 
 all: $(BASE)
 
-clear: 
-	rm -f !($(C)|Makefile)
+clean: 
+	rm -f cat
 
 %: %.c
 	cc $< -o $@ 
