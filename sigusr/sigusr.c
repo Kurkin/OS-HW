@@ -23,7 +23,7 @@ int main(int argv, char** args) {
     memset (&act, '\0', sizeof(act));
          
     act.sa_sigaction = &sigctch;
-    act.sa_flags = SA_SIGINFO;
+    act.sa_flags = SA_SIGINFO | SA_RESETHAND;
                  
     if (sigaction(SIGUSR1, &act, NULL) < 0) {
         perror ("sigaction");
