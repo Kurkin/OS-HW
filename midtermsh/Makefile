@@ -1,10 +1,4 @@
-BASE=midtermsh
-C=$(BASE).c
-
-all: $(BASE)
-
-clean: 
-	    rm -f $(BASE)
-
-%: %.c
-	    clang++ $< -o $@ -std=c++11
+all: midtermsh.cpp
+	clang++ -std=c++11 -Wall -Wextra midtermsh.cpp -o midtermsh
+clean:
+	rm -f midterm
