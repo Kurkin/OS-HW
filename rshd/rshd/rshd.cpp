@@ -85,10 +85,6 @@ sshd_daemon::daemon_tcp_connection::daemon_tcp_connection(sshd_daemon& daemon, i
     
     char *slavename = ptsname(ptymfd);
     
-    ptysfd = open(slavename, O_RDWR);
-    if (ptysfd == -1)
-        throw_error(errno, "open()");
-    
     queue.add_event_handler(ptymfd, EVFILT_READ, [this](struct kevent event){
         char buff[event.data];
         size_t red = read(ptymfd, buff, event.data);
@@ -101,6 +97,11 @@ sshd_daemon::daemon_tcp_connection::daemon_tcp_connection(sshd_daemon& daemon, i
         throw_error(errno, "fork()");
     
     if (!child) { //child
+        if (setsid() == -1)
+            throw_error(errno, "setsid()");
+        ptysfd = open(slavename, O_RDWR);
+        if (ptysfd == -1)
+            throw_error(errno, "open()");
         if (dup2(ptysfd, 0) == -1)
             throw_error(errno, "dup2()");
         if (dup2(ptysfd, 1) == -1)
@@ -119,7 +120,10 @@ sshd_daemon::daemon_tcp_connection::daemon_tcp_connection(sshd_daemon& daemon, i
 
 sshd_daemon::daemon_tcp_connection::~daemon_tcp_connection() {
     queue.delete_event_handler(ptymfd, EVFILT_READ);
-    kill(child, SIGINT);
+    if (kill(child, SIGHUP))
+        throw_error(errno, "kill()");
+    int status;
+    wait(&status);
     close(ptymfd);
 }
 
