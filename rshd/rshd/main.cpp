@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <fcntl.h>
+#include <sys/types.h>
 
 #include "throw_error.h"
 #include "rshd.hpp"
@@ -34,7 +35,7 @@ void make_daemon()
             throw_error(errno, "fork()");
     
         if (parent) {
-            int info = open("/tmp/rshd.pid", O_RDWR | O_CREAT);
+            int info = open("/tmp/rshd.pid", O_RDWR | O_CREAT, 0664);
             if (info == -1)
                 throw_error(errno, "open()");
             if (write(info, std::to_string(parent).c_str(), std::to_string(parent).length()) == -1)
