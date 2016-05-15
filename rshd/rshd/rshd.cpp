@@ -87,7 +87,7 @@ sshd_daemon::daemon_tcp_connection::daemon_tcp_connection(sshd_daemon& daemon, i
     
     queue.add_event_handler(ptymfd, EVFILT_READ, [this](struct kevent event){
         char buff[event.data];
-        size_t red = read(ptymfd, buff, event.data);
+        size_t read = read(ptymfd, buff, event.data);
         write_to_client({buff, red});
     });
     
